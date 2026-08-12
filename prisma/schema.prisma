@@ -1,0 +1,306 @@
+// Loja Strong — modelo de dados
+//
+// Todos os valores monetários são armazenados em CENTAVOS (Int) para evitar
+// erros de arredondamento de ponto flutuante. Use os helpers de src/lib/money.ts.
+//
+// O provider é SQLite para rodar sem infraestrutura. A migração para PostgreSQL
+// exige apenas trocar `provider` e `url` abaixo e rodar `prisma migrate dev`:
+// nenhum tipo específico de SQLite é usado, e enums são strings validadas na
+// camada de aplicação (src/lib/enums.ts) justamente para manter a portabilidade.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// A connection URL vive em prisma.config.ts (exigência do Prisma 7).
+datasource db {
+  provider = "sqlite"
+}
+
+// ---------------------------------------------------------------- identidade
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  phone        String?
+  document     String? // CPF, usado na emissão do pagamento
+  role         String   @default("CUSTOMER") // CUSTOMER | ADMIN
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  addresses Address[]
+  orders    Order[]
+  carts     Cart[]
+  reviews   Review[]
+
+  @@index([role])
+}
+
+model Address {
+  id         String   @id @default(cuid())
+  userId     String
+  label      String   @default("Principal")
+  recipient  String
+  zip        String
+  street     String
+  number     String
+  complement String?
+  district   String
+  city       String
+  state      String
+  isDefault  Boolean  @default(false)
+  /// O id é um cuid e não é cronológico; sem esta coluna não há como listar
+  /// o endereço mais recente primeiro.
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// ----------------------------------------------------------------- catálogo
+
+model Category {
+  id          String  @id @default(cuid())
+  name        String
+  slug        String  @unique
+  description String?
+  emblem      String? // caractere/emoji usado como marca da categoria na navegação
+  sortOrder   Int     @default(0)
+  active      Boolean @default(true)
+
+  products Product[]
+
+  @@index([active, sortOrder])
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  tagline     String? // frase curta exibida no card
+  description String
+  categoryId  String
+  /// Preço de referência exibido quando o produto não tem variante selecionada.
+  basePrice   Int
+  /// Preço "de" para exibir desconto. Nulo quando não há promoção.
+  compareAt   Int?
+  weightGrams Int      @default(300)
+  active      Boolean  @default(true)
+  featured    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category Category         @relation(fields: [categoryId], references: [id])
+  images   ProductImage[]
+  variants ProductVariant[]
+  reviews  Review[]
+
+  @@index([categoryId, active])
+  @@index([featured, active])
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  productId String
+  url       String
+  alt       String
+  sortOrder Int     @default(0)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId, sortOrder])
+}
+
+/// Unidade real de venda e de estoque. Todo produto tem ao menos uma variante
+/// (produtos sem grade usam size = "Único").
+model ProductVariant {
+  id        String  @id @default(cuid())
+  productId String
+  sku       String  @unique
+  size      String  @default("Único")
+  color     String?
+  colorHex  String?
+  /// Sobrescreve Product.basePrice quando presente (ex.: tamanho GG mais caro).
+  price     Int?
+  stock     Int     @default(0)
+  /// Abaixo deste valor o admin recebe alerta de reposição.
+  lowStock  Int     @default(5)
+  active    Boolean @default(true)
+
+  product        Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  cartItems      CartItem[]
+  orderItems     OrderItem[]
+  stockMovements StockMovement[]
+
+  @@unique([productId, size, color])
+  @@index([productId, active])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  productId String
+  userId    String
+  rating    Int
+  comment   String
+  approved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, userId])
+  @@index([productId, approved])
+}
+
+// ------------------------------------------------------------------ carrinho
+
+model Cart {
+  id        String   @id @default(cuid())
+  userId    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  items CartItem[]
+
+  @@index([userId])
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  cartId    String
+  variantId String
+  quantity  Int
+  /// Mantém o carrinho na ordem em que o cliente montou.
+  createdAt DateTime @default(now())
+
+  cart    Cart           @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  variant ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@unique([cartId, variantId])
+  @@index([cartId])
+}
+
+// ------------------------------------------------------------------- pedidos
+
+model Order {
+  id     String @id @default(cuid())
+  /// Número curto exibido ao cliente (ex.: SBS-2026-000042).
+  number String @unique
+  userId String
+
+  status        String @default("PENDING") // PENDING | PAID | PACKING | SHIPPED | DELIVERED | CANCELED
+  paymentStatus String @default("PENDING") // PENDING | APPROVED | REJECTED | REFUNDED
+  paymentMethod String // PIX | BOLETO | CREDIT_CARD
+
+  subtotal Int
+  shipping Int
+  discount Int @default(0)
+  total    Int
+
+  couponCode String?
+
+  // Snapshot do endereço no momento da compra: alterar o cadastro depois não
+  // pode reescrever o histórico do pedido.
+  recipient  String
+  zip        String
+  street     String
+  number_    String
+  complement String?
+  district   String
+  city       String
+  state      String
+
+  shippingMethod String  @default("Padrão")
+  trackingCode   String?
+  notes          String?
+
+  // Rastro do provedor de pagamento.
+  provider       String  @default("mercadopago")
+  preferenceId   String?
+  paymentId      String?
+  checkoutUrl    String?
+  /// Payload do provedor (Pix copia-e-cola, linha digitável do boleto).
+  paymentPayload String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  paidAt    DateTime?
+
+  user     User            @relation(fields: [userId], references: [id])
+  items    OrderItem[]
+  events   OrderEvent[]
+  movements StockMovement[]
+
+  @@index([userId, createdAt])
+  @@index([status])
+  @@index([paymentStatus])
+}
+
+/// Itens congelam nome, SKU e preço: o pedido precisa continuar legível mesmo
+/// que o produto seja renomeado ou excluído depois.
+model OrderItem {
+  id           String  @id @default(cuid())
+  orderId      String
+  variantId    String?
+  productName  String
+  variantLabel String
+  sku          String
+  unitPrice    Int
+  quantity     Int
+  total        Int
+  imageUrl     String?
+
+  order   Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variant ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+}
+
+model OrderEvent {
+  id        String   @id @default(cuid())
+  orderId   String
+  status    String
+  message   String
+  createdAt DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId, createdAt])
+}
+
+// -------------------------------------------------------- estoque e promoções
+
+model StockMovement {
+  id        String   @id @default(cuid())
+  variantId String
+  /// Negativo em venda, positivo em reposição ou cancelamento.
+  delta     Int
+  reason    String // SALE | RESTOCK | ADJUSTMENT | CANCELLATION
+  note      String?
+  orderId   String?
+  createdAt DateTime @default(now())
+
+  variant ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  order   Order?         @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@index([variantId, createdAt])
+}
+
+model Coupon {
+  id          String    @id @default(cuid())
+  code        String    @unique
+  description String?
+  type        String // PERCENT | FIXED | FREE_SHIPPING
+  value       Int // percentual (1-100) ou centavos
+  minSubtotal Int       @default(0)
+  maxUses     Int?
+  usedCount   Int       @default(0)
+  startsAt    DateTime?
+  expiresAt   DateTime?
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+}

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800" role="img">
+  <ellipse cx="400" cy="686" rx="235" ry="26" fill="#031c33" opacity="0.14"/>
+
+  <defs>
+    <linearGradient id="fabric" x1="0" y1="0" x2="1" y2="0.4">
+      <stop offset="0" stop-color="#eaa634"/>
+      <stop offset="0.45" stop-color="#ffc452"/>
+      <stop offset="1" stop-color="#dc9826"/>
+    </linearGradient>
+  </defs>
+  <path d="M300 168 l-124 58 -46 148 78 30 26 -56 v306 q0 16 16 16 h300 q16 0 16 -16 v-306 l26 56 78 -30 -46 -148 -124 -58 z"
+        fill="url(#fabric)" stroke="#dc9826" stroke-width="3"/>
+  <!-- gola -->
+  <path d="M300 168 q100 74 200 0 q-44 -22 -100 -22 t-100 22 z" fill="#cc8816"/>
+  <path d="M300 168 q100 74 200 0" fill="none" stroke="#be7a08" stroke-width="7"/>
+  <!-- costuras das mangas -->
+  <path d="M254 348 l-24 -8" stroke="#dc9826" stroke-width="4" opacity="0.6"/>
+  <path d="M546 348 l24 -8" stroke="#dc9826" stroke-width="4" opacity="0.6"/>
+  
+    <g transform="translate(400 372)" opacity="0.95">
+      <rect x="-57.04" y="-60.720000000000006" width="114.08" height="6.44"
+            fill="#fab644" rx="3.68"/>
+      <text x="0" y="0" text-anchor="middle" dominant-baseline="central"
+            font-family="Helvetica, Arial, sans-serif" font-weight="700"
+            font-size="40.48" fill="#031c33" letter-spacing="8.28">STRONG</text>
+      <text x="0" y="36.800000000000004" text-anchor="middle" dominant-baseline="central"
+            font-family="Helvetica, Arial, sans-serif" font-weight="500"
+            font-size="14.72" fill="#031c33" letter-spacing="5.52"
+            opacity="0.85">BUSINESS SCHOOL</text>
+    </g>
+</svg>

@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800" role="img">
+  <ellipse cx="400" cy="686" rx="235" ry="26" fill="#031c33" opacity="0.14"/>
+
+  <defs>
+    <linearGradient id="fleece" x1="0" y1="0" x2="1" y2="0.4">
+      <stop offset="0" stop-color="#001d45"/>
+      <stop offset="0.45" stop-color="#113b63"/>
+      <stop offset="1" stop-color="#000f37"/>
+    </linearGradient>
+  </defs>
+  <!-- capuz, atrás dos ombros -->
+  <path d="M300 232 q100 -84 200 0 q32 42 20 88 q-120 -50 -240 0 q-12 -46 20 -88 z" fill="#00072f"/>
+  <!-- mangas compridas, com punho na ponta -->
+  <path d="M272 252 L182 292 L146 498 L236 518 L292 336 Z" fill="#00274f"/>
+  <path d="M528 252 L618 292 L654 498 L564 518 L508 336 Z" fill="#000f37"/>
+  <path d="M146 498 L236 518 L228 560 L138 540 Z" fill="#000129"/>
+  <path d="M654 498 L564 518 L572 560 L662 540 Z" fill="#000129"/>
+  <!-- corpo -->
+  <path d="M272 252 q128 -54 256 0 v344 q0 24 -24 24 h-208 q-24 0 -24 -24 z"
+        fill="url(#fleece)" stroke="#000f37" stroke-width="3"/>
+  <!-- abertura do capuz -->
+  <path d="M302 248 q98 90 196 0 q-50 -30 -98 -30 t-98 30 z" fill="#000021"/>
+  <!-- cordão -->
+  <path d="M368 276 q8 62 -8 96" stroke="#f1f5f9" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <path d="M434 276 q-8 62 8 96" stroke="#f1f5f9" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <circle cx="358" cy="378" r="8" fill="#f1f5f9"/>
+  <circle cx="444" cy="378" r="8" fill="#f1f5f9"/>
+  <!-- bolso canguru -->
+  <path d="M300 486 h200 v88 h-200 z" fill="#00234b" opacity="0.55"/>
+  <path d="M300 486 q100 22 200 0" fill="none" stroke="#000f37" stroke-width="5"/>
+  <!-- barra -->
+  <rect x="268" y="596" width="264" height="32" rx="8" fill="#000129"/>
+  
+    <g transform="translate(400 400)" opacity="0.95">
+      <rect x="-47.12" y="-50.160000000000004" width="94.24" height="5.32"
+            fill="#fab644" rx="3.04"/>
+      <text x="0" y="0" text-anchor="middle" dominant-baseline="central"
+            font-family="Helvetica, Arial, sans-serif" font-weight="700"
+            font-size="33.44" fill="#ffffff" letter-spacing="6.84">STRONG</text>
+      <text x="0" y="30.400000000000002" text-anchor="middle" dominant-baseline="central"
+            font-family="Helvetica, Arial, sans-serif" font-weight="500"
+            font-size="12.16" fill="#ffffff" letter-spacing="4.56"
+            opacity="0.85">BUSINESS SCHOOL</text>
+    </g>
+</svg>

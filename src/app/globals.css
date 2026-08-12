@@ -1,26 +1,498 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ---------------------------------------------------------------------------
+   Loja Strong — sistema visual
+
+   A paleta é a da marca: azul institucional #074784 e âmbar #fab644, as duas
+   cores do logotipo. O azul carrega a estrutura; o âmbar aparece onde há ação
+   ou destaque, na mesma proporção em que aparece na assinatura da escola.
+
+   Verde e vermelho existem apenas como cores de sistema — aprovado, esgotado,
+   erro — e nunca como cor de marca.
+
+   O elemento de assinatura é o LAÇO do logotipo: a fita contínua que volta
+   sobre si mesma. Ela reaparece como gradiente em movimento no herói, como
+   halo sob as peças em destaque e como traço sob as palavras marcadas.
+--------------------------------------------------------------------------- */
+
+@theme {
+  --color-brand-950: #031c33;
+  --color-brand-900: #052f57;
+  --color-brand-800: #074784;
+  --color-brand-700: #0a5da9;
+  --color-brand-600: #1176ce;
+  --color-brand-500: #2a92e8;
+  --color-brand-100: #d5e6f5;
+  --color-brand-50: #eef5fb;
+
+  --color-amber-700: #b9791a;
+  --color-amber-600: #d99320;
+  --color-amber-500: #fab644;
+  --color-amber-400: #ffc766;
+  --color-amber-300: #ffd98f;
+  --color-amber-100: #fef1d9;
+
+  --color-success-600: #128057;
+  --color-success-500: #1a9e6a;
+  --color-success-100: #dcf3e8;
+
+  --color-paper: #f1f5f9;
+  --color-paper-dim: #e3ebf3;
+  --color-ink: #0b1b2b;
+  --color-ink-muted: #57687a;
+
+  --color-danger: #c8452f;
+  --color-danger-bg: #fbe9e6;
+
+  --font-display: var(--font-bricolage), "Segoe UI", system-ui, sans-serif;
+  --font-sans: var(--font-instrument), "Segoe UI", system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "Cascadia Mono", monospace;
+
+  --radius-card: 16px;
+
+  /* Sombras em camadas: uma rasa para o contato e uma larga e azulada para a
+     profundidade. Sombra cinza sobre azul suja a cor. */
+  --shadow-lift: 0 1px 2px rgba(3, 28, 51, 0.06), 0 12px 28px -12px rgba(3, 28, 51, 0.28);
+  --shadow-float: 0 2px 4px rgba(3, 28, 51, 0.08), 0 28px 56px -20px rgba(3, 28, 51, 0.42);
+  --shadow-amber: 0 12px 32px -12px rgba(250, 182, 68, 0.55);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.024em;
+    text-wrap: balance;
+  }
+
+  /* Foco sempre visível: a loja precisa ser navegável só pelo teclado. */
+  :focus-visible {
+    outline: 2px solid var(--color-amber-500);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: var(--color-amber-300);
+    color: var(--color-brand-950);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* ---------------------------------------------------- fundos em gradiente */
+
+  /* Campo profundo do herói: o azul da marca com dois focos de luz, um âmbar
+     e um azul claro, como o laço do logotipo refletindo. */
+  .field-deep {
+    background-color: var(--color-brand-950);
+    background-image:
+      radial-gradient(60rem 32rem at 12% -10%, rgba(17, 118, 206, 0.55), transparent 60%),
+      radial-gradient(44rem 28rem at 92% 8%, rgba(250, 182, 68, 0.22), transparent 62%),
+      radial-gradient(38rem 30rem at 70% 108%, rgba(10, 93, 169, 0.5), transparent 60%);
+  }
+
+  .field-brand {
+    background-image: linear-gradient(
+      135deg,
+      var(--color-brand-900) 0%,
+      var(--color-brand-800) 45%,
+      var(--color-brand-700) 100%
+    );
+  }
+
+  /* Aurora: o gradiente respira devagar, sem chamar atenção para si. */
+  .aurora::before {
+    content: "";
+    position: absolute;
+    inset: -30%;
+    background-image:
+      radial-gradient(30rem 22rem at 30% 40%, rgba(250, 182, 68, 0.16), transparent 65%),
+      radial-gradient(34rem 24rem at 72% 60%, rgba(42, 146, 232, 0.2), transparent 65%);
+    animation: drift 22s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  /* Malha fina de linhas, herdada do papel milimetrado dos cadernos. */
+  .grid-lines {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 4rem 4rem;
+  }
+
+  /* -------------------------------------------------------------- superfície */
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--color-brand-100);
+    border-radius: var(--radius-card);
+  }
+
+  /* Vidro sobre o herói escuro. */
+  .glass {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(14px);
+  }
+
+  /* Vidro denso, para blocos com texto que precisa ser lido — sobre a peça
+     em destaque o vidro claro não garante contraste suficiente. */
+  .glass-solid {
+    background: rgba(3, 28, 51, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(18px);
+    box-shadow: var(--shadow-float);
+  }
+
+  /* ------------------------------------------------------------------- 3D */
+
+  /* Contêiner que dá perspectiva aos filhos. */
+  .stage {
+    perspective: 1400px;
+    perspective-origin: 50% 40%;
+  }
+
+  /* Peça que se inclina de leve ao receber o ponteiro, como se estivesse
+     apoiada numa mesa e fosse levantada para você olhar melhor. */
+  .tilt {
+    transform-style: preserve-3d;
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+
+  .tilt:hover,
+  .tilt:focus-within {
+    transform: translateY(-6px) rotateX(6deg) rotateY(-5deg) scale(1.015);
+    box-shadow: var(--shadow-float);
+  }
+
+  /* Objeto suspenso: flutua e projeta um halo que acompanha o movimento. */
+  .floating {
+    animation: float 7s ease-in-out infinite;
+  }
+
+  .halo::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 8%;
+    width: 62%;
+    height: 12%;
+    translate: -50% 0;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(3, 28, 51, 0.32), transparent);
+    filter: blur(6px);
+    animation: halo 7s ease-in-out infinite;
+  }
+
+  /* ------------------------------------------------------------- etiquetas */
+
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  /* ---------------------------------------------------------- formulários */
+
+  .field {
+    width: 100%;
+    border: 1px solid var(--color-brand-100);
+    border-radius: 10px;
+    background: #fff;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.9375rem;
+    color: var(--color-ink);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .field:hover {
+    border-color: color-mix(in srgb, var(--color-brand-600) 40%, transparent);
+  }
+
+  .field:focus {
+    outline: none;
+    border-color: var(--color-brand-600);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand-600) 16%, transparent);
+  }
+
+  .field-label {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-brand-900);
+    margin-bottom: 0.375rem;
+  }
+
+  /* --------------------------------------------------------------- botões */
+
+  .btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    padding: 0.6875rem 1.375rem;
+    transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease,
+      background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+  }
+
+  .btn:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  .btn-primary {
+    background-image: linear-gradient(
+      135deg,
+      var(--color-brand-800),
+      var(--color-brand-700) 60%,
+      var(--color-brand-600)
+    );
+    color: #fff;
+    box-shadow: var(--shadow-lift);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    box-shadow: var(--shadow-float);
+  }
+
+  .btn-amber {
+    background-image: linear-gradient(135deg, var(--color-amber-500), var(--color-amber-400));
+    color: var(--color-brand-950);
+    box-shadow: var(--shadow-lift);
+  }
+
+  .btn-amber:hover:not(:disabled) {
+    box-shadow: var(--shadow-amber);
+  }
+
+  /* Brilho que atravessa o botão principal quando o ponteiro chega. */
+  .btn-primary::after,
+  .btn-amber::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      100deg,
+      transparent 20%,
+      rgba(255, 255, 255, 0.34) 48%,
+      transparent 72%
+    );
+    translate: -110% 0;
+    transition: translate 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .btn-primary:hover::after,
+  .btn-amber:hover::after {
+    translate: 110% 0;
+  }
+
+  .btn-outline {
+    border: 1px solid var(--color-brand-100);
+    background: #fff;
+    color: var(--color-brand-900);
+  }
+
+  .btn-outline:hover:not(:disabled) {
+    border-color: var(--color-brand-600);
+    box-shadow: var(--shadow-lift);
+  }
+
+  .btn-ghost {
+    color: var(--color-brand-800);
+  }
+
+  .btn-ghost:hover:not(:disabled) {
+    background: var(--color-brand-50);
+    transform: none;
+  }
+
+  .btn-glass {
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    backdrop-filter: blur(10px);
+  }
+
+  .btn-glass:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.16);
+  }
+
+  .btn-sm {
+    padding: 0.4375rem 0.875rem;
+    font-size: 0.8125rem;
+  }
+
+  /* Traço à mão sob a palavra marcada — o mesmo gesto do laço do logotipo. */
+  .marked {
+    position: relative;
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  .marked::after {
+    content: "";
+    position: absolute;
+    left: -0.04em;
+    right: -0.04em;
+    bottom: -0.04em;
+    height: 0.085em;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--color-amber-500), var(--color-amber-300));
+    transform-origin: left;
+    animation: draw 0.9s 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+@layer utilities {
+  .container-page {
+    width: 100%;
+    max-width: 78rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+
+  /* Tabelas e blocos largos rolam sozinhos, nunca a página. */
+  .scroll-x {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .text-gradient {
+    background-image: linear-gradient(120deg, #fff 30%, var(--color-amber-300));
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Entrada em cascata: o índice define o atraso de cada item. */
+  .stagger > * {
+    animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--i, 0) * 90ms);
+  }
+}
+
+/* Revelação por rolagem. O componente Reveal marca data-shown quando o
+   elemento entra na tela; o resto é transição pura.
+
+   O estado escondido só vale onde há JavaScript para revelá-lo de volta: sem
+   script, `opacity: 0` deixaria a página inteira em branco. */
+@media (scripting: enabled) {
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  [data-reveal][data-shown='true'] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-0.6deg);
+  }
+  50% {
+    transform: translateY(-16px) rotate(0.6deg);
+  }
+}
+
+@keyframes halo {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.28;
+    transform: scale(0.86);
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: translate3d(-4%, -2%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(5%, 3%, 0) scale(1.08);
+  }
+}
+
+@keyframes draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Quem pediu menos movimento recebe a mesma página, parada. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .tilt:hover,
+  .tilt:focus-within {
+    transform: none;
+  }
+
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
 }

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800" role="img">
+  <ellipse cx="400" cy="686" rx="235" ry="26" fill="#031c33" opacity="0.14"/>
+
+  <defs>
+    <linearGradient id="barrel" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#d28e1c"/>
+      <stop offset="0.3" stop-color="#ffd664"/>
+      <stop offset="0.62" stop-color="#fab644"/>
+      <stop offset="1" stop-color="#d28e1c"/>
+    </linearGradient>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8b96a3"/>
+      <stop offset="0.35" stop-color="#e8edf2"/>
+      <stop offset="0.7" stop-color="#aab4c0"/>
+      <stop offset="1" stop-color="#6e7884"/>
+    </linearGradient>
+  </defs>
+  <g transform="rotate(-18 400 400)">
+    <!-- ponta -->
+    <path d="M372 636 l28 74 28 -74 z" fill="#4c5763"/>
+    <path d="M394 692 l6 18 6 -18 z" fill="#031c33"/>
+    <!-- cone -->
+    <path d="M360 556 h80 l-12 82 h-56 z" fill="url(#metal)"/>
+    <!-- corpo -->
+    <rect x="356" y="196" width="88" height="364" rx="12" fill="url(#barrel)"/>
+    <!-- anel -->
+    <rect x="352" y="264" width="96" height="22" rx="6" fill="url(#metal)"/>
+    <!-- tampa -->
+    <path d="M352 118 q0 -26 26 -26 h44 q26 0 26 26 v104 h-96 z" fill="#d28e1c"/>
+    <!-- clipe -->
+    <path d="M440 118 q22 0 22 24 v96 q0 12 -12 12 t-12 -12 v-84" fill="none" stroke="url(#metal)" stroke-width="14" stroke-linecap="round"/>
+    <!-- gravação -->
+    <text x="400" y="400" text-anchor="middle" transform="rotate(90 400 400)"
+          font-family="Helvetica, Arial, sans-serif" font-weight="700" font-size="34"
+          letter-spacing="9" fill="#031c33" opacity="0.9">STRONG</text>
+  </g>
+</svg>

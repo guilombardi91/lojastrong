@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800" role="img">
+  <ellipse cx="400" cy="686" rx="235" ry="26" fill="#031c33" opacity="0.14"/>
+
+  <defs>
+    <linearGradient id="crown" x1="0" y1="0" x2="1" y2="0.3">
+      <stop offset="0" stop-color="#003774"/>
+      <stop offset="0.5" stop-color="#155592"/>
+      <stop offset="1" stop-color="#002562"/>
+    </linearGradient>
+  </defs>
+  <!-- aba curva, projetada à frente -->
+  <path d="M196 458 q204 100 408 0 q20 86 -92 118 q-112 32 -224 0 q-112 -32 -92 -118 z" fill="#001552"/>
+  <path d="M214 486 q186 82 372 0" fill="none" stroke="#000744" stroke-width="5" opacity="0.7"/>
+  <!-- copa -->
+  <path d="M400 196 q-180 0 -180 200 q0 34 12 62 q168 60 336 0 q12 -28 12 -62 q0 -200 -180 -200 z" fill="url(#crown)"/>
+  <!-- friso da base -->
+  <path d="M232 458 q168 60 336 0" fill="none" stroke="#000d4a" stroke-width="10"/>
+  <!-- gomos -->
+  <path d="M400 196 v250" stroke="#002562" stroke-width="4" opacity="0.4"/>
+  <path d="M306 224 q-26 112 -18 220" stroke="#002562" stroke-width="4" opacity="0.28" fill="none"/>
+  <path d="M494 224 q26 112 18 220" stroke="#002562" stroke-width="4" opacity="0.28" fill="none"/>
+  <circle cx="400" cy="204" r="12" fill="#000f4c"/>
+  
+    <g transform="translate(400 356)" opacity="0.95">
+      <rect x="-45.88" y="-48.84" width="91.76" height="5.180000000000001"
+            fill="#fab644" rx="2.96"/>
+      <text x="0" y="0" text-anchor="middle" dominant-baseline="central"
+            font-family="Helvetica, Arial, sans-serif" font-weight="700"
+            font-size="32.56" fill="#ffffff" letter-spacing="6.66">STRONG</text>
+      <text x="0" y="29.6" text-anchor="middle" dominant-baseline="central"
+            font-family="Helvetica, Arial, sans-serif" font-weight="500"
+            font-size="11.84" fill="#ffffff" letter-spacing="4.4399999999999995"
+            opacity="0.85">BUSINESS SCHOOL</text>
+    </g>
+</svg>

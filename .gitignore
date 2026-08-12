@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# banco local de desenvolvimento
+*.db
+*.db-journal
+
+# saídas dos scripts de verificação
+/capturas
+falha-fluxo-compra.png

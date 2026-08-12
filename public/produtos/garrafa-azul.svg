@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800" role="img">
+  <ellipse cx="400" cy="686" rx="235" ry="26" fill="#031c33" opacity="0.14"/>
+
+  <defs>
+    <linearGradient id="steel" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#002360"/>
+      <stop offset="0.26" stop-color="#2363a0"/>
+      <stop offset="0.6" stop-color="#074784"/>
+      <stop offset="1" stop-color="#002360"/>
+    </linearGradient>
+  </defs>
+  <!-- bico e tampa -->
+  <rect x="374" y="96" width="52" height="22" rx="10" fill="#001552"/>
+  <rect x="362" y="114" width="76" height="58" rx="12" fill="#000d4a"/>
+  <rect x="358" y="166" width="84" height="14" rx="5" fill="#001f5c"/>
+  <!-- ombro cônico -->
+  <path d="M370 178 h60 l54 50 h-168 z" fill="#00316e"/>
+  <!-- corpo esbelto -->
+  <path d="M316 224 q84 -14 168 0 v354 q0 64 -64 64 h-40 q-64 0 -64 -64 z" fill="url(#steel)"/>
+  <rect x="338" y="256" width="20" height="330" rx="10" fill="#fff" opacity="0.18"/>
+  
+    <g transform="translate(400 420)" opacity="0.94">
+      <rect x="-52.08" y="-55.440000000000005" width="104.16" height="5.880000000000001"
+            fill="#fab644" rx="3.36"/>
+      <text x="0" y="0" text-anchor="middle" dominant-baseline="central"
+            font-family="Helvetica, Arial, sans-serif" font-weight="700"
+            font-size="36.96" fill="#ffffff" letter-spacing="7.56">STRONG</text>
+      <text x="0" y="33.6" text-anchor="middle" dominant-baseline="central"
+            font-family="Helvetica, Arial, sans-serif" font-weight="500"
+            font-size="13.44" fill="#ffffff" letter-spacing="5.04"
+            opacity="0.85">BUSINESS SCHOOL</text>
+    </g>
+</svg>

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800" role="img">
+  <ellipse cx="400" cy="686" rx="235" ry="26" fill="#031c33" opacity="0.14"/>
+
+  <defs>
+    <linearGradient id="cover" x1="0" y1="0" x2="1" y2="0.25">
+      <stop offset="0" stop-color="#eca836"/>
+      <stop offset="0.5" stop-color="#ffc250"/>
+      <stop offset="1" stop-color="#d89422"/>
+    </linearGradient>
+  </defs>
+  <!-- miolo -->
+  <rect x="238" y="146" width="352" height="492" rx="10" fill="#ffffff"/>
+  <rect x="244" y="152" width="346" height="480" rx="8" fill="#e9eef4"/>
+  <!-- capa -->
+  <rect x="222" y="134" width="356" height="500" rx="14" fill="url(#cover)"/>
+  <!-- lombada -->
+  <rect x="222" y="134" width="34" height="500" rx="14" fill="#c68210"/>
+  <rect x="252" y="134" width="6" height="500" fill="#be7a08" opacity="0.5"/>
+  <!-- elástico -->
+  <rect x="520" y="134" width="16" height="500" fill="#031c33" opacity="0.55"/>
+  <!-- pauta impressa na capa, o traço que dá nome à linha -->
+  <g opacity="0.22">
+    <rect x="300" y="452" width="180" height="2" fill="#031c33"/>
+    <rect x="300" y="476" width="180" height="2" fill="#031c33"/>
+    <rect x="300" y="500" width="180" height="2" fill="#031c33"/>
+    <rect x="300" y="524" width="180" height="2" fill="#031c33"/>
+    <rect x="300" y="548" width="180" height="2" fill="#031c33"/>
+    <rect x="300" y="572" width="180" height="2" fill="#031c33"/>
+    <rect x="300" y="596" width="180" height="2" fill="#031c33"/>
+  </g>
+  <rect x="300" y="440" width="2" height="180" fill="#fab644" opacity="0.8"/>
+  
+    <g transform="translate(392 300)" opacity="0.95">
+      <rect x="-59.519999999999996" y="-63.36" width="119.03999999999999" height="6.720000000000001"
+            fill="#fab644" rx="3.84"/>
+      <text x="0" y="0" text-anchor="middle" dominant-baseline="central"
+            font-family="Helvetica, Arial, sans-serif" font-weight="700"
+            font-size="42.24" fill="#031c33" letter-spacing="8.64">STRONG</text>
+      <text x="0" y="38.400000000000006" text-anchor="middle" dominant-baseline="central"
+            font-family="Helvetica, Arial, sans-serif" font-weight="500"
+            font-size="15.36" fill="#031c33" letter-spacing="5.76"
+            opacity="0.85">BUSINESS SCHOOL</text>
+    </g>
+</svg>
