@@ -6,6 +6,7 @@ import type { Role } from './enums'
 
 export const SESSION_COOKIE = 'sbs_session'
 export const CART_COOKIE = 'sbs_cart'
+export const VISITOR_COOKIE = 'sbs_visitor'
 
 const MAX_AGE_SECONDS = 60 * 60 * 24 * 30 // 30 dias
 

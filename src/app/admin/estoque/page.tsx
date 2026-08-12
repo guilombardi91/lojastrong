@@ -4,8 +4,9 @@ import type { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin } from '@/lib/auth'
 import { formatDateTime } from '@/lib/utils'
+import { pendingAlertCounts } from '@/lib/stock-alerts'
 import { STOCK_REASON_LABEL, type StockReason } from '@/lib/enums'
-import { StockBadge } from '@/components/ui/badge'
+import { StockAlertBadge, StockBadge } from '@/components/ui/badge'
 import { AdminHeader, DataTable, Stat, Td, Th } from '@/components/admin/ui'
 import { RestockForm } from '@/components/admin/restock-form'
 
@@ -42,6 +43,7 @@ export default async function AdminEstoquePage({ searchParams }: PageProps<'/adm
   const needsRestock = variants.filter((v) => v.stock <= v.lowStock && v.stock > 0)
   const soldOut = variants.filter((v) => v.stock <= 0)
   const totalUnits = variants.reduce((sum, v) => sum + v.stock, 0)
+  const alertCounts = await pendingAlertCounts(soldOut.map((v) => v.id))
 
   const rows = filtro === 'repor' ? needsRestock : variants
 
@@ -145,7 +147,10 @@ export default async function AdminEstoquePage({ searchParams }: PageProps<'/adm
                 {variant.color ? ` · ${variant.color}` : ''}
               </Td>
               <Td>
-                <StockBadge stock={variant.stock} lowStock={variant.lowStock} />
+                <div className="flex flex-col items-start gap-1">
+                  <StockBadge stock={variant.stock} lowStock={variant.lowStock} />
+                  <StockAlertBadge count={alertCounts[variant.id] ?? 0} />
+                </div>
               </Td>
               <Td>
                 <RestockForm variantId={variant.id} />

@@ -30,11 +30,13 @@ export function ProductDetail({
   basePrice,
   compareAt,
   variants,
+  userEmail,
 }: {
   images: ProductImage[]
   basePrice: number
   compareAt: number | null
   variants: PurchaseVariant[]
+  userEmail?: string | null
 }) {
   // A capa precisa nascer na cor que o painel de compra já vem selecionando,
   // senão a primeira impressão é de uma peça que não é a escolhida.
@@ -94,6 +96,7 @@ export function ProductDetail({
         basePrice={basePrice}
         compareAt={compareAt}
         variants={variants}
+        userEmail={userEmail}
         onColorChange={(color) => {
           const index = imageIndexForColor(images, color)
           if (index >= 0) setActive(index)

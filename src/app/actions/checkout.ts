@@ -11,6 +11,7 @@ import { paymentProvider } from '@/lib/payments'
 import { checkoutSchema, fieldErrors } from '@/lib/validation'
 import { normalizeZip } from '@/lib/shipping'
 import { COUPON_COOKIE } from '@/lib/coupon'
+import { VISITOR_COOKIE } from '@/lib/session'
 
 export type CheckoutState = { errors?: Record<string, string> }
 
@@ -76,6 +77,7 @@ export async function checkoutAction(
       method: data.method,
       couponCode: data.couponCode,
       notes: data.notes,
+      visitorId: store.get(VISITOR_COOKIE)?.value ?? null,
     })
   } catch (error) {
     if (error instanceof CheckoutError) {

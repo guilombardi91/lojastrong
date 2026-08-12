@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Check, LoaderCircle, Minus, Plus, ShoppingBag, TriangleAlert } from 'lucide-react'
 import { addToCartAction } from '@/app/actions/cart'
 import { Installments, Price } from '@/components/ui/price'
+import { StockAlertForm } from '@/components/loja/stock-alert-form'
 import { compareSizes } from '@/lib/enums'
 import { cn } from '@/lib/utils'
 
@@ -31,11 +32,13 @@ export function ProductPurchase({
   compareAt,
   variants,
   onColorChange,
+  userEmail,
 }: {
   basePrice: number
   compareAt: number | null
   variants: PurchaseVariant[]
   onColorChange?: (color: string | null) => void
+  userEmail?: string | null
 }) {
   const colors = useMemo(
     () => [
@@ -251,10 +254,14 @@ export function ProductPurchase({
         )}
         {soldOut && (
           <p className="text-sm text-ink-muted">
-            Esta combinação acabou. Escolha outra cor ou tamanho — ou volte em alguns dias.
+            Esta combinação acabou. Escolha outra cor ou tamanho — ou deixe seu e-mail abaixo.
           </p>
         )}
       </div>
+
+      {soldOut && selected && (
+        <StockAlertForm key={selected.id} variantId={selected.id} defaultEmail={userEmail} />
+      )}
 
       {selected && (
         <dl className="grid grid-cols-2 gap-x-6 gap-y-2 border-t border-brand-100 pt-5 text-sm">

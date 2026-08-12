@@ -23,6 +23,9 @@ export type CreateOrderInput = {
   method: PaymentMethod
   couponCode?: string | null
   notes?: string | null
+  /// Id anônimo do visitante (cookie sbs_visitor), para o relatório de
+  /// conversão ligar visita e compra sem usar dado pessoal.
+  visitorId?: string | null
 }
 
 /**
@@ -90,6 +93,7 @@ export async function createOrder(input: CreateOrderInput) {
       data: {
         number: await nextOrderNumber(),
         userId,
+        visitorId: input.visitorId ?? null,
         status: 'PENDING',
         paymentStatus: 'PENDING',
         paymentMethod: method,

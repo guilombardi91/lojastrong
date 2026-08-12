@@ -6,6 +6,7 @@ import { prisma } from '@/lib/prisma'
 import { requireAdmin } from '@/lib/auth'
 import { inputToCents } from '@/lib/money'
 import { slugify } from '@/lib/utils'
+import { notifyStockAlerts } from '@/lib/stock-alerts'
 import { categorySchema, fieldErrors, productSchema, variantSchema } from '@/lib/validation'
 
 export type AdminState = { errors?: Record<string, string>; ok?: boolean; message?: string }
@@ -218,6 +219,10 @@ export async function saveVariantAction(
           },
         }),
       ])
+
+      if (before.stock <= 0 && parsed.data.stock > 0) {
+        await notifyStockAlerts(id)
+      }
     }
   } else {
     const created = await prisma.productVariant.create({
@@ -287,6 +292,10 @@ export async function restockAction(_prev: AdminState, formData: FormData): Prom
       },
     }),
   ])
+
+  if (variant.stock <= 0 && next > 0) {
+    await notifyStockAlerts(variantId)
+  }
 
   revalidatePath('/admin/estoque')
   revalidatePath('/produtos')

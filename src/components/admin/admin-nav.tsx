@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
+  BarChart3,
   Boxes,
   LayoutDashboard,
   Package,
@@ -21,6 +22,7 @@ const ITEMS = [
   { href: '/admin/categorias', label: 'Categorias', icon: Tags },
   { href: '/admin/cupons', label: 'Cupons', icon: TicketPercent },
   { href: '/admin/clientes', label: 'Clientes', icon: Users },
+  { href: '/admin/relatorios', label: 'Relatórios', icon: BarChart3 },
 ]
 
 export function AdminNav({ pendingOrders }: { pendingOrders: number }) {

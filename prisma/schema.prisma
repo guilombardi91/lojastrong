@@ -31,10 +31,12 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  addresses Address[]
-  orders    Order[]
-  carts     Cart[]
-  reviews   Review[]
+  addresses    Address[]
+  orders       Order[]
+  carts        Cart[]
+  reviews      Review[]
+  stockAlerts  StockAlert[]
+  productViews ProductView[]
 
   @@index([role])
 }
@@ -98,9 +100,29 @@ model Product {
   images   ProductImage[]
   variants ProductVariant[]
   reviews  Review[]
+  views    ProductView[]
 
   @@index([categoryId, active])
   @@index([featured, active])
+}
+
+/// Uma visita à página do produto. `visitorId` é um identificador anônimo
+/// (cookie sbs_visitor, ver src/lib/visitor.ts) — não é o id do usuário, para
+/// contar visitantes de quem nunca criou conta. `userId` fica preenchido só
+/// quando a visita aconteceu com sessão ativa, e existe apenas para relatório
+/// administrativo (não altera nada que o visitante vê).
+model ProductView {
+  id        String   @id @default(cuid())
+  productId String
+  visitorId String
+  userId    String?
+  createdAt DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user    User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([productId, createdAt])
+  @@index([productId, visitorId])
 }
 
 model ProductImage {
@@ -134,9 +156,28 @@ model ProductVariant {
   cartItems      CartItem[]
   orderItems     OrderItem[]
   stockMovements StockMovement[]
+  stockAlerts    StockAlert[]
 
   @@unique([productId, size, color])
   @@index([productId, active])
+}
+
+/// Pedido de aviso por e-mail quando uma variante esgotada voltar ao estoque.
+/// notifiedAt fica nulo até o disparo; reabastecer de novo depois de avisado
+/// reabre o alerta (ver notifyStockAlerts em src/lib/stock-alerts.ts).
+model StockAlert {
+  id         String    @id @default(cuid())
+  variantId  String
+  email      String
+  userId     String?
+  createdAt  DateTime  @default(now())
+  notifiedAt DateTime?
+
+  variant ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  user    User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@unique([variantId, email])
+  @@index([variantId, notifiedAt])
 }
 
 model Review {
@@ -192,6 +233,11 @@ model Order {
   number String @unique
   userId String
 
+  /// Mesmo identificador anônimo de ProductView, gravado no fechamento do
+  /// pedido. É o que liga "visitou o produto" a "comprou o produto" no
+  /// relatório de conversão, sem precisar de nenhum dado pessoal a mais.
+  visitorId String?
+
   status        String @default("PENDING") // PENDING | PAID | PACKING | SHIPPED | DELIVERED | CANCELED
   paymentStatus String @default("PENDING") // PENDING | APPROVED | REJECTED | REFUNDED
   paymentMethod String // PIX | BOLETO | CREDIT_CARD
@@ -230,9 +276,9 @@ model Order {
   updatedAt DateTime  @updatedAt
   paidAt    DateTime?
 
-  user     User            @relation(fields: [userId], references: [id])
-  items    OrderItem[]
-  events   OrderEvent[]
+  user      User            @relation(fields: [userId], references: [id])
+  items     OrderItem[]
+  events    OrderEvent[]
   movements StockMovement[]
 
   @@index([userId, createdAt])

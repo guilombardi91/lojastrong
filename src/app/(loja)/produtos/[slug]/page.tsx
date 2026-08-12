@@ -3,8 +3,10 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ChevronRight, PackageCheck, RotateCcw, ShieldCheck } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
+import { getCurrentUser } from '@/lib/auth'
 import { PRODUCT_CARD_SELECT } from '@/lib/catalog'
 import { ProductDetail } from '@/components/loja/product-detail'
+import { TrackProductView } from '@/components/loja/track-view'
 import { ShippingCalculator } from '@/components/loja/shipping-calculator'
 import { ProductCard } from '@/components/loja/product-card'
 
@@ -51,7 +53,7 @@ const POLICIES = [
 
 export default async function ProdutoPage({ params }: PageProps<'/produtos/[slug]'>) {
   const { slug } = await params
-  const product = await getProduct(slug)
+  const [product, user] = await Promise.all([getProduct(slug), getCurrentUser()])
   if (!product) notFound()
 
   const related = await prisma.product.findMany({
@@ -62,6 +64,8 @@ export default async function ProdutoPage({ params }: PageProps<'/produtos/[slug
 
   return (
     <div className="container-page py-8 lg:py-12">
+      <TrackProductView productId={product.id} />
+
       <nav aria-label="Trilha" className="mb-8 flex flex-wrap items-center gap-1.5 text-sm text-ink-muted">
         <Link href="/" className="hover:text-brand-700">
           Início
@@ -90,6 +94,7 @@ export default async function ProdutoPage({ params }: PageProps<'/produtos/[slug
             images={product.images.map((image) => ({ url: image.url, alt: image.alt }))}
             basePrice={product.basePrice}
             compareAt={product.compareAt}
+            userEmail={user?.email}
             variants={product.variants.map((variant) => ({
               id: variant.id,
               sku: variant.sku,

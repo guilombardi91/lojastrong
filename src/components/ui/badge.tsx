@@ -1,3 +1,4 @@
+import { BellRing } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
   ORDER_STATUS_LABEL,
@@ -71,4 +72,15 @@ export function StockBadge({ stock, lowStock }: { stock: number; lowStock: numbe
   if (stock <= 0) return <Badge tone="danger">Esgotado</Badge>
   if (stock <= lowStock) return <Badge tone="amber">Repor · {stock}</Badge>
   return <Badge tone="success">{stock} em estoque</Badge>
+}
+
+/** Quantas pessoas pediram para ser avisadas quando esta variante voltar. */
+export function StockAlertBadge({ count }: { count: number }) {
+  if (count <= 0) return null
+  return (
+    <Badge tone="brand">
+      <BellRing size={11} aria-hidden />
+      {count} na espera
+    </Badge>
+  )
 }
