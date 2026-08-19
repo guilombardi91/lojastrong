@@ -112,7 +112,7 @@ export async function createOrder(input: CreateOrderInput) {
         state: address.state,
         shippingMethod: chosen.name,
         notes: input.notes ?? null,
-        provider: process.env.PAYMENT_PROVIDER ?? 'sandbox',
+        provider: process.env.PAYMENT_PROVIDER || 'sandbox',
         items: {
           create: cart.items.map((line) => ({
             variantId: line.variantId,

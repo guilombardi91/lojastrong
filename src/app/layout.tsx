@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   },
   description:
     'Canecas, camisas, agasalhos, canetas e cadernos da Strong Business School. Feitos para quem estuda, ensina e representa a escola.',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
 }
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {

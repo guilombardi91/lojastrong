@@ -44,7 +44,7 @@ export async function notifyStockAlerts(variantId: string): Promise<void> {
   })
   if (pending.length === 0) return
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
   for (const alert of pending) {
     const { product } = alert.variant

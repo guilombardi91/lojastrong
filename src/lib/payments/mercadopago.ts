@@ -57,7 +57,7 @@ export const mercadoPagoProvider: PaymentProvider = {
   id: 'mercadopago',
 
   async createCheckout(intent: PaymentIntent): Promise<PaymentSession> {
-    const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+    const base = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
     const preference = new Preference(client())
 
     const items = intent.items.map((item) => ({

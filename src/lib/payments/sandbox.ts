@@ -32,7 +32,7 @@ export const sandboxProvider: PaymentProvider = {
   id: 'sandbox',
 
   async createCheckout(intent: PaymentIntent): Promise<PaymentSession> {
-    const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+    const base = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
     let payload: string | null = null
     if (intent.method === 'PIX') payload = fakePixPayload(intent.orderNumber, intent.total)

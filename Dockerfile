@@ -18,11 +18,24 @@ RUN npm ci
 COPY . .
 
 # Variáveis NEXT_PUBLIC_* são embutidas no bundle do cliente durante o build,
-# então precisam existir agora (passe como --build-arg no EasyPanel).
+# então precisam existir agora. O EasyPanel deriva os --build-arg das
+# variáveis cadastradas no painel do serviço: o que não estiver lá chega
+# aqui como string vazia, não como ausente.
 ARG NEXT_PUBLIC_SITE_URL
 ARG NEXT_PUBLIC_MP_PUBLIC_KEY
 ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
 ENV NEXT_PUBLIC_MP_PUBLIC_KEY=$NEXT_PUBLIC_MP_PUBLIC_KEY
+
+# Vazio não quebra mais o build (o código cai para localhost), e é justamente
+# por isso que precisa gritar: o bundle sairia com http://localhost:3000 no
+# retorno do checkout e nos links dos e-mails, sem nenhum erro visível.
+RUN if [ -z "$NEXT_PUBLIC_SITE_URL" ]; then \
+      echo '################################################################'; \
+      echo '# AVISO: NEXT_PUBLIC_SITE_URL vazio.'; \
+      echo '# O bundle usará http://localhost:3000 e o checkout não voltará'; \
+      echo '# para a loja. Cadastre a variável no painel do EasyPanel.'; \
+      echo '################################################################'; \
+    fi
 
 # O build não precisa de um Postgres de pé: os generateStaticParams de
 # produtos/[slug] e categorias/[slug] caem para lista vazia quando a conexão

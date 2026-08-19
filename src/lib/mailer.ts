@@ -18,7 +18,7 @@ function transporter() {
 
   return nodemailer.createTransport({
     host,
-    port: Number(process.env.SMTP_PORT ?? 587),
+    port: Number(process.env.SMTP_PORT || 587),
     secure: process.env.SMTP_SECURE === 'true',
     auth: process.env.SMTP_USER
       ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
@@ -35,7 +35,7 @@ export async function sendMail(input: MailInput): Promise<void> {
   }
 
   await transport.sendMail({
-    from: process.env.SMTP_FROM ?? 'Loja Strong <no-reply@strong.com.br>',
+    from: process.env.SMTP_FROM || 'Loja Strong <no-reply@strong.com.br>',
     ...input,
   })
 }

@@ -11,7 +11,7 @@ export type { PaymentIntent, PaymentSession, PaymentProvider } from './types'
  * é melhor a equipe conseguir testar o fluxo do que ver um erro 500.
  */
 export function paymentProvider(): PaymentProvider {
-  const configured = process.env.PAYMENT_PROVIDER ?? 'sandbox'
+  const configured = process.env.PAYMENT_PROVIDER || 'sandbox'
 
   if (configured === 'mercadopago') {
     if (!process.env.MP_ACCESS_TOKEN) {
