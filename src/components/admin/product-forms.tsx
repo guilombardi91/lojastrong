@@ -1,13 +1,14 @@
 'use client'
 
-import { useActionState, useState } from 'react'
-import { Eye, EyeOff, LoaderCircle, Plus, Trash2, X } from 'lucide-react'
+import { useActionState, useRef, useState } from 'react'
+import { Eye, EyeOff, LoaderCircle, Plus, Trash2, Upload, X } from 'lucide-react'
 import {
   deleteProductAction,
   deleteVariantAction,
   saveProductAction,
   saveVariantAction,
   toggleProductAction,
+  uploadProductImageAction,
   type AdminState,
 } from '@/app/actions/admin/catalogo'
 import { FieldError, FormError, SuccessNote } from '@/components/ui/feedback'
@@ -55,11 +56,37 @@ export function ProductForm({
 }) {
   const [state, action, pending] = useActionState(saveProductAction, {} as AdminState)
   const [images, setImages] = useState<string[]>(product?.images ?? [])
+  const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   function toggleImage(url: string) {
     setImages((current) =>
       current.includes(url) ? current.filter((item) => item !== url) : [...current, url],
     )
+  }
+
+  async function handleFilesSelected(files: FileList | null) {
+    if (!files || files.length === 0) return
+
+    setUploading(true)
+    setUploadError(null)
+
+    const uploaded: string[] = []
+    for (const file of Array.from(files)) {
+      const uploadData = new FormData()
+      uploadData.set('file', file)
+      const result = await uploadProductImageAction(uploadData)
+      if (result.ok && result.url) {
+        uploaded.push(result.url)
+      } else {
+        setUploadError(result.error ?? `Falha ao enviar "${file.name}".`)
+      }
+    }
+
+    if (uploaded.length > 0) setImages((current) => [...current, ...uploaded])
+    setUploading(false)
+    if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
   return (
@@ -232,7 +259,8 @@ export function ProductForm({
         <div>
           <h2 className="font-display text-lg font-bold text-brand-950">Imagens</h2>
           <p className="mt-1 text-sm text-ink-muted">
-            A primeira selecionada vira a capa. Clique para incluir ou remover.
+            A primeira selecionada vira a capa. Envie fotos do computador ou escolha entre as
+            imagens padrão do sistema — clique para incluir ou remover.
           </p>
         </div>
 
@@ -261,6 +289,35 @@ export function ProductForm({
             ))}
           </ol>
         )}
+
+        <div>
+          <p className="tag mb-2 text-ink-muted">Enviar do computador</p>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/avif,image/gif"
+            multiple
+            className="hidden"
+            onChange={(event) => handleFilesSelected(event.target.files)}
+          />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="btn btn-outline btn-sm"
+          >
+            {uploading ? (
+              <LoaderCircle size={15} className="animate-spin" aria-hidden />
+            ) : (
+              <Upload size={15} aria-hidden />
+            )}
+            {uploading ? 'Enviando...' : 'Escolher fotos'}
+          </button>
+          <p className="mt-1.5 text-xs text-ink-muted">
+            JPG, PNG, WEBP, AVIF ou GIF, até 8MB cada. Pode selecionar mais de uma foto.
+          </p>
+          {uploadError && <p className="mt-1.5 text-xs font-medium text-danger">{uploadError}</p>}
+        </div>
 
         <div>
           <p className="tag mb-2 text-ink-muted">Disponíveis</p>

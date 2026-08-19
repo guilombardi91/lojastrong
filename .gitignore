@@ -45,6 +45,9 @@ next-env.d.ts
 *.db
 *.db-journal
 
+# fotos de produto enviadas pelo admin
+/public/uploads
+
 # saídas dos scripts de verificação
 /capturas
 falha-fluxo-compra.png

@@ -1,5 +1,8 @@
 'use server'
 
+import { randomUUID } from 'node:crypto'
+import { mkdir, writeFile } from 'node:fs/promises'
+import path from 'node:path'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
@@ -10,6 +13,51 @@ import { notifyStockAlerts } from '@/lib/stock-alerts'
 import { categorySchema, fieldErrors, productSchema, variantSchema } from '@/lib/validation'
 
 export type AdminState = { errors?: Record<string, string>; ok?: boolean; message?: string }
+
+// -------------------------------------------------------------- upload de fotos
+
+const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads', 'produtos')
+const MAX_UPLOAD_BYTES = 8 * 1024 * 1024 // 8MB, com folga para o limite de 10mb da Server Action
+
+const UPLOAD_EXT_BY_MIME: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+  'image/avif': 'avif',
+  'image/gif': 'gif',
+}
+
+export type UploadState = { ok: boolean; url?: string; error?: string }
+
+/**
+ * Recebe uma foto enviada do computador do admin e grava em
+ * public/uploads/produtos — o mesmo formato de URL (`/uploads/produtos/...`)
+ * que o restante do catálogo já usa para as imagens padronizadas.
+ */
+export async function uploadProductImageAction(formData: FormData): Promise<UploadState> {
+  await requireAdmin()
+
+  const file = formData.get('file')
+  if (!(file instanceof File) || file.size === 0) {
+    return { ok: false, error: 'Selecione um arquivo de imagem.' }
+  }
+
+  const ext = UPLOAD_EXT_BY_MIME[file.type]
+  if (!ext) {
+    return { ok: false, error: 'Formato não suportado. Use JPG, PNG, WEBP, AVIF ou GIF.' }
+  }
+
+  if (file.size > MAX_UPLOAD_BYTES) {
+    return { ok: false, error: 'Imagem maior que 8MB. Escolha um arquivo menor.' }
+  }
+
+  await mkdir(UPLOAD_DIR, { recursive: true })
+  const filename = `${randomUUID()}.${ext}`
+  const bytes = Buffer.from(await file.arrayBuffer())
+  await writeFile(path.join(UPLOAD_DIR, filename), bytes)
+
+  return { ok: true, url: `/uploads/produtos/${filename}` }
+}
 
 /**
  * Garante um slug único acrescentando um sufixo numérico quando necessário.
