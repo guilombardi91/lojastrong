@@ -230,12 +230,34 @@ como S3 ou Cloudinary.
 
 ---
 
+## Segredos e deploy
+
+Só `NEXT_PUBLIC_SITE_URL` e `NEXT_PUBLIC_MP_PUBLIC_KEY` precisam existir durante o
+`docker build` — elas são embutidas no bundle do cliente e, por definição, não são
+segredo. Todas as outras (`DATABASE_URL`, `AUTH_SECRET`, `MP_ACCESS_TOKEN`,
+`MP_WEBHOOK_SECRET`, `SMTP_*`) são de runtime, e o Dockerfile não declara `ARG` para
+nenhuma delas.
+
+O motivo é concreto: o EasyPanel monta os `--build-arg` a partir das variáveis do
+painel e **imprime o comando inteiro no log de build, em texto claro**. Toda senha que
+passa por ali fica registrada em um log que costuma ser visível a mais gente do que a
+senha deveria. Como o Dockerfile ignora esses argumentos, o build funciona sem eles.
+
+Se uma credencial vazar assim, rotacione as três coisas de uma vez: a senha do banco, o
+`AUTH_SECRET` e a senha SMTP. O `AUTH_SECRET` é o mais urgente — ele assina as sessões,
+e quem o tem entra no `/admin` sem senha. Trocá-lo derruba todas as sessões abertas, o
+que é exatamente o efeito desejado nessa situação.
+
+---
+
 ## Antes de publicar
 
 - [ ] Gerar um `AUTH_SECRET` novo: `node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"`
+- [ ] Conferir que nenhuma senha aparece no log do último build (ver "Segredos e deploy")
 - [ ] Trocar as senhas de `admin@strong.com.br` e remover o usuário de teste
-- [ ] Migrar para PostgreSQL e configurar backup
+- [ ] Configurar backup do PostgreSQL e restringir o acesso à porta 5432
 - [ ] Preencher as credenciais do Mercado Pago e cadastrar o webhook
+- [ ] Definir `PAYMENT_PROVIDER=mercadopago` — em `sandbox` o cliente aprova o próprio pedido
 - [ ] Apontar `NEXT_PUBLIC_SITE_URL` para o domínio real
 - [ ] Revisar os textos da central de ajuda em `src/app/(loja)/ajuda/[slug]/page.tsx`
       (prazos, canais de contato e política de troca precisam bater com a operação real)

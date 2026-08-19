@@ -68,10 +68,6 @@ function secoes(consent: Consent | null): SecaoLegal[] {
           <strong className="text-brand-900">Avisos de reposição:</strong> quando você pede para ser
           avisado de um item esgotado, guardamos seu e-mail — mesmo que você não tenha conta na loja.
         </>,
-        <>
-          <strong className="text-brand-900">Avaliações:</strong> nota e comentário que você escreve
-          sobre um produto. Depois de aprovados, aparecem publicamente junto do seu nome.
-        </>,
       ],
     },
     {

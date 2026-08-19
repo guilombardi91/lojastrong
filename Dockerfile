@@ -37,12 +37,13 @@ RUN if [ -z "$NEXT_PUBLIC_SITE_URL" ]; then \
       echo '################################################################'; \
     fi
 
-# O build não precisa de um Postgres de pé: o SiteHeader lê cookies, o que torna
-# dinâmica toda a árvore da loja, então nenhuma página é pré-renderizada aqui.
-# Este valor só existe para o `prisma generate` ter uma URL sintaticamente
-# válida. A que importa é a de runtime, injetada pelo EasyPanel.
-ARG DATABASE_URL="postgresql://build:build@127.0.0.1:5432/build"
-ENV DATABASE_URL=$DATABASE_URL
+# DATABASE_URL de propósito NÃO é um ARG: nada aqui precisa da credencial real.
+# O SiteHeader lê cookies, o que torna dinâmica toda a árvore da loja, então
+# nenhuma página é pré-renderizada no build; o `prisma generate` só exige uma
+# URL sintaticamente válida, e este literal serve. Declarar um ARG aqui daria
+# ao EasyPanel motivo para injetar a senha do banco no comando de build — que
+# ele imprime em texto claro no log. A URL real chega apenas em runtime.
+ENV DATABASE_URL="postgresql://build:build@127.0.0.1:5432/build"
 
 RUN npx prisma generate
 RUN npm run build

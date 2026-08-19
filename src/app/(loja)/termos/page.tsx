@@ -104,14 +104,6 @@ const SECOES: SecaoLegal[] = [
     ],
   },
   {
-    titulo: 'Avaliações de produtos',
-    paragrafos: [
-      'Clientes podem avaliar os produtos que compraram. As avaliações passam por moderação antes de aparecer publicamente, junto do nome de quem escreveu.',
-      'Não publicamos conteúdo ofensivo, discriminatório, com dados pessoais de terceiros, propaganda ou que fuja do produto avaliado. A moderação não altera notas: apenas aprova ou recusa a publicação.',
-      'Ao enviar uma avaliação, você autoriza sua exibição na loja enquanto o produto estiver no catálogo.',
-    ],
-  },
-  {
     titulo: 'Propriedade intelectual',
     paragrafos: [
       'A marca Strong Business School, o logotipo, os textos, as fotos e o desenho da loja são protegidos por lei. O uso sem autorização prévia e por escrito é proibido.',
