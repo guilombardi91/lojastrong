@@ -40,20 +40,6 @@ export async function generateMetadata({ params }: PageProps<'/produtos/[slug]'>
   }
 }
 
-export async function generateStaticParams() {
-  // O `next build` executa isto antes de haver um Postgres alcançável (ver
-  // Dockerfile). Sem banco a lista sai vazia e as rotas passam a ser geradas
-  // sob demanda — que é o que já acontece de qualquer forma, porque o
-  // SiteHeader lê cookies e torna dinâmica toda a árvore da loja.
-  try {
-    const products = await prisma.product.findMany({ where: { active: true }, select: { slug: true } })
-    return products.map((product) => ({ slug: product.slug }))
-  } catch {
-    console.warn('[build] banco indisponível ao listar produtos; rotas serão geradas sob demanda')
-    return []
-  }
-}
-
 const POLICIES = [
   { icon: PackageCheck, title: 'Envio em até 2 dias úteis', text: 'Separação e postagem a partir de São Paulo.' },
   { icon: RotateCcw, title: 'Primeira troca sem custo', text: 'Trocamos o tamanho em até 30 dias.' },

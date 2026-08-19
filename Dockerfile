@@ -37,11 +37,10 @@ RUN if [ -z "$NEXT_PUBLIC_SITE_URL" ]; then \
       echo '################################################################'; \
     fi
 
-# O build não precisa de um Postgres de pé: os generateStaticParams de
-# produtos/[slug] e categorias/[slug] caem para lista vazia quando a conexão
-# falha, e essas rotas passam a ser geradas sob demanda. Passar a URL real
-# como --build-arg é opcional, e só serve para adiantar esses params aqui.
-# A URL que importa é a de runtime, injetada pelo EasyPanel.
+# O build não precisa de um Postgres de pé: o SiteHeader lê cookies, o que torna
+# dinâmica toda a árvore da loja, então nenhuma página é pré-renderizada aqui.
+# Este valor só existe para o `prisma generate` ter uma URL sintaticamente
+# válida. A que importa é a de runtime, injetada pelo EasyPanel.
 ARG DATABASE_URL="postgresql://build:build@127.0.0.1:5432/build"
 ENV DATABASE_URL=$DATABASE_URL
 
