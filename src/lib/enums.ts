@@ -1,6 +1,6 @@
-// O SQLite não tem tipo enum nativo, então o schema usa String e a validação
-// vive aqui. Manter os valores como const assertions dá autocomplete e checagem
-// em tempo de compilação sem abrir mão da portabilidade para PostgreSQL.
+// O schema usa String em vez do tipo enum do Postgres, e a validação vive aqui:
+// acrescentar um status novo não exige migration. Manter os valores como const
+// assertions dá autocomplete e checagem em tempo de compilação.
 
 export const ROLES = ['CUSTOMER', 'ADMIN'] as const
 export type Role = (typeof ROLES)[number]

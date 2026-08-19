@@ -16,7 +16,12 @@ export default async function AdminClientesPage({ searchParams }: PageProps<'/ad
   const q = typeof params.q === 'string' ? params.q.trim() : ''
 
   const where: Prisma.UserWhereInput = q
-    ? { OR: [{ name: { contains: q } }, { email: { contains: q } }] }
+    ? {
+        OR: [
+          { name: { contains: q, mode: 'insensitive' } },
+          { email: { contains: q, mode: 'insensitive' } },
+        ],
+      }
     : {}
 
   const users = await prisma.user.findMany({

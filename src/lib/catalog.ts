@@ -60,14 +60,14 @@ export async function searchCatalog(params: CatalogParams) {
   }
 
   if (params.q) {
-    // O LIKE do SQLite já ignora caixa para ASCII; no PostgreSQL, acrescentar
-    // `mode: 'insensitive'` a cada cláusula.
+    // O ILIKE do PostgreSQL diferencia caixa por padrão, daí o `mode` em cada
+    // cláusula: sem ele, buscar "camiseta" deixaria de achar "Camiseta".
     where.OR = [
-      { name: { contains: params.q } },
-      { tagline: { contains: params.q } },
-      { description: { contains: params.q } },
-      { category: { name: { contains: params.q } } },
-      { variants: { some: { sku: { contains: params.q.toUpperCase() } } } },
+      { name: { contains: params.q, mode: 'insensitive' } },
+      { tagline: { contains: params.q, mode: 'insensitive' } },
+      { description: { contains: params.q, mode: 'insensitive' } },
+      { category: { name: { contains: params.q, mode: 'insensitive' } } },
+      { variants: { some: { sku: { contains: params.q, mode: 'insensitive' } } } },
     ]
   }
 

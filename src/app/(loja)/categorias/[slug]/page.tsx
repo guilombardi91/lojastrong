@@ -21,11 +21,17 @@ export async function generateMetadata({
 }
 
 export async function generateStaticParams() {
-  const categories = await prisma.category.findMany({
-    where: { active: true },
-    select: { slug: true },
-  })
-  return categories.map((category) => ({ slug: category.slug }))
+  // Mesmo motivo de produtos/[slug]: o build não pode depender do banco.
+  try {
+    const categories = await prisma.category.findMany({
+      where: { active: true },
+      select: { slug: true },
+    })
+    return categories.map((category) => ({ slug: category.slug }))
+  } catch {
+    console.warn('[build] banco indisponível ao listar categorias; rotas serão geradas sob demanda')
+    return []
+  }
 }
 
 export default async function CategoriaPage({ params, searchParams }: PageProps<'/categorias/[slug]'>) {

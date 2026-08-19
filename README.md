@@ -10,8 +10,8 @@ e área administrativa com controle de estoque.
 
 ```bash
 npm install
-cp .env.example .env        # e preencha AUTH_SECRET
-npx prisma migrate dev      # cria o banco SQLite e aplica o schema
+cp .env.example .env        # e preencha DATABASE_URL e AUTH_SECRET
+npx prisma migrate deploy   # cria as tabelas no PostgreSQL
 npm run db:seed             # popula catálogo, cupons e usuários de teste
 npm run dev
 ```
@@ -93,17 +93,16 @@ aponte `PAYMENT_PROVIDER`. Nenhuma tela precisa mudar.
 
 ---
 
-## Migrar para PostgreSQL
+## Banco de dados
 
-O SQLite serve para desenvolver; produção pede Postgres. A troca são quatro passos:
+A loja roda em PostgreSQL, via o adapter `@prisma/adapter-pg` (o Prisma 7 exige
+um driver adapter explícito, ver `src/lib/prisma.ts`). Basta um `DATABASE_URL`
+apontando para o servidor e `npx prisma migrate deploy` para criar as tabelas.
 
-1. `npm install @prisma/adapter-pg pg`
-2. Em `prisma/schema.prisma`, troque `provider = "sqlite"` por `provider = "postgresql"`.
-3. Em `src/lib/prisma.ts`, troque o adapter (o arquivo tem o bloco comentado pronto).
-4. Ajuste `DATABASE_URL` no `.env` e rode `npx prisma migrate dev --name postgres`.
-
-Nenhum tipo específico de SQLite é usado, e os enums são strings validadas em
-`src/lib/enums.ts` justamente para que essa troca não exija reescrever consultas.
+Os enums são strings validadas em `src/lib/enums.ts`, não tipos `enum` do banco:
+acrescentar um status novo não exige migration. Em compensação, buscas por texto
+precisam de `mode: 'insensitive'` explícito — o `ILIKE` do Postgres diferencia
+caixa, ao contrário do `LIKE` do SQLite usado até então.
 
 ---
 

@@ -3,10 +3,9 @@
 // Todos os valores monetários são armazenados em CENTAVOS (Int) para evitar
 // erros de arredondamento de ponto flutuante. Use os helpers de src/lib/money.ts.
 //
-// O provider é SQLite para rodar sem infraestrutura. A migração para PostgreSQL
-// exige apenas trocar `provider` e `url` abaixo e rodar `prisma migrate dev`:
-// nenhum tipo específico de SQLite é usado, e enums são strings validadas na
-// camada de aplicação (src/lib/enums.ts) justamente para manter a portabilidade.
+// Nenhum tipo específico do Postgres é usado e os enums são strings validadas
+// na camada de aplicação (src/lib/enums.ts) — acrescentar um status novo não
+// exige migration.
 
 generator client {
   provider = "prisma-client-js"

@@ -19,10 +19,10 @@ export default async function AdminPedidosPage({ searchParams }: PageProps<'/adm
   if (ORDER_STATUSES.includes(status as OrderStatus)) where.status = status
   if (q) {
     where.OR = [
-      { number: { contains: q.toUpperCase() } },
-      { user: { name: { contains: q } } },
-      { user: { email: { contains: q } } },
-      { trackingCode: { contains: q } },
+      { number: { contains: q, mode: 'insensitive' } },
+      { user: { name: { contains: q, mode: 'insensitive' } } },
+      { user: { email: { contains: q, mode: 'insensitive' } } },
+      { trackingCode: { contains: q, mode: 'insensitive' } },
     ]
   }
 

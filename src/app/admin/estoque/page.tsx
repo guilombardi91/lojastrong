@@ -21,7 +21,10 @@ export default async function AdminEstoquePage({ searchParams }: PageProps<'/adm
   const where: Prisma.ProductVariantWhereInput = {}
   if (filtro === 'esgotado') where.stock = { lte: 0 }
   if (q) {
-    where.OR = [{ sku: { contains: q.toUpperCase() } }, { product: { name: { contains: q } } }]
+    where.OR = [
+      { sku: { contains: q, mode: 'insensitive' } },
+      { product: { name: { contains: q, mode: 'insensitive' } } },
+    ]
   }
 
   const [variants, movements] = await Promise.all([

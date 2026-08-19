@@ -19,8 +19,8 @@ export default async function AdminProdutosPage({ searchParams }: PageProps<'/ad
   const where: Prisma.ProductWhereInput = {}
   if (q) {
     where.OR = [
-      { name: { contains: q } },
-      { variants: { some: { sku: { contains: q.toUpperCase() } } } },
+      { name: { contains: q, mode: 'insensitive' } },
+      { variants: { some: { sku: { contains: q, mode: 'insensitive' } } } },
     ]
   }
   if (categoria) where.categoryId = categoria
