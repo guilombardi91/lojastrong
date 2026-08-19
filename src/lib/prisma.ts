@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
+//import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
+import { PrismaPg } from '@prisma/adapter-pg'
 
 // O Prisma 7 exige um driver adapter explícito no cliente.
 //
@@ -10,9 +11,7 @@ import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
 //        const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! })
 //   3. em prisma/schema.prisma, troque provider = "sqlite" por "postgresql"
 //   4. npx prisma migrate dev --name postgres
-const adapter = new PrismaBetterSqlite3({
-  url: process.env.DATABASE_URL ?? 'file:./dev.db',
-})
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! })
 
 // O hot reload do `next dev` reavalia os módulos a cada alteração; sem o cache
 // global cada recarga abriria uma nova conexão.
