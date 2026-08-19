@@ -79,6 +79,9 @@ export default async function AdminClientesPage({ searchParams }: PageProps<'/ad
                   <span className="font-medium">{user.name}</span>
                   {user.role === 'ADMIN' && <Badge tone="brand">Admin</Badge>}
                   {!user.active && <Badge tone="danger">Desativado</Badge>}
+                  {/* Quem não confirmou não fecha pedido: o suporte precisa
+                      enxergar isso antes de investigar "não consigo comprar". */}
+                  {!user.emailVerifiedAt && <Badge tone="amber">E-mail não confirmado</Badge>}
                 </div>
                 <span className="mt-0.5 block text-xs text-ink-muted">{user.email}</span>
               </Td>

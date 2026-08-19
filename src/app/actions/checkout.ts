@@ -30,6 +30,16 @@ export async function checkoutAction(
   const user = await getCurrentUser()
   if (!user) redirect('/entrar?destino=/checkout')
 
+  // A tela já esconde o formulário de quem não confirmou, mas Server Actions
+  // são endpoints POST públicos: sem esta linha, bastaria um POST direto.
+  if (!user.emailVerified) {
+    return {
+      errors: {
+        form: 'Confirme seu e-mail antes de finalizar a compra. O link está na sua caixa de entrada.',
+      },
+    }
+  }
+
   const cart = await readCart()
   if (!cart || summarizeCart(cart).isEmpty) redirect('/carrinho')
 

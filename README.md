@@ -47,6 +47,12 @@ Mercado Pago via Checkout Pro (Pix, boleto e cartão em até 12x), webhook de co
 validação de assinatura, e um provedor de simulação para rodar o fluxo inteiro sem
 credenciais.
 
+**Conta e acesso**
+Cadastro com confirmação de e-mail, "esqueci minha senha" com link de uso único, e troca de
+senha que derruba as sessões abertas em outros aparelhos. Enquanto o e-mail não é
+confirmado o cliente navega e monta o carrinho normalmente, mas não finaliza o pedido — é
+por esse endereço que sai a confirmação da compra e o rastreio.
+
 **Área do cliente**
 Perfil, troca de senha, endereços salvos com padrão, histórico de pedidos e acompanhamento
 com linha do tempo e código de rastreio.
@@ -90,6 +96,22 @@ Todo o checkout conversa com a interface `PaymentProvider` (`src/lib/payments/ty
 Para usar Pagar.me, Asaas ou Stripe, escreva um arquivo novo em `src/lib/payments/`
 implementando `createCheckout` e `fetchStatus`, registre-o em `src/lib/payments/index.ts` e
 aponte `PAYMENT_PROVIDER`. Nenhuma tela precisa mudar.
+
+---
+
+## E-mails da conta
+
+Confirmação de cadastro e redefinição de senha usam a mesma mecânica: um segredo aleatório
+que só existe dentro do e-mail, do qual o banco guarda apenas o SHA-256 (`AuthToken`). Um
+dump do banco não permite assumir conta nenhuma. O link de confirmação vale 24 horas, o de
+redefinição vale 1 hora, e emitir um novo invalida o anterior.
+
+Os dois links abrem uma página com um botão, em vez de agir direto no GET. O motivo é
+prático: filtros como o Safe Links do Microsoft 365 abrem os endereços das mensagens para
+escaneá-las, e queimariam o token antes de o cliente clicar.
+
+Sem `SMTP_HOST` configurado nada é enviado — o `mailer` só registra a mensagem no console,
+o que é suficiente para testar o fluxo localmente: o link aparece no terminal.
 
 ---
 

@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers'
 import { randomUUID } from 'node:crypto'
+import { trackingAllowed } from './consent'
 import { VISITOR_COOKIE } from './session'
 
 // Identificador anônimo de navegador, sem nenhum dado pessoal — mesmo
@@ -26,11 +27,17 @@ export async function readVisitorId(): Promise<string | null> {
  *
  * Escreve cookie, então só pode ser chamada de Server Action ou Route
  * Handler — mesma restrição de `ensureCart`.
+ *
+ * Devolve null para quem não consentiu com os cookies não essenciais. A
+ * checagem fica aqui, e não só em quem chama, para que nenhum uso futuro
+ * volte a criar o identificador sem passar pelo consentimento.
  */
-export async function ensureVisitorId(): Promise<string> {
+export async function ensureVisitorId(): Promise<string | null> {
   const store = await cookies()
   const existing = store.get(VISITOR_COOKIE)?.value
   if (existing) return existing
+
+  if (!(await trackingAllowed())) return null
 
   const id = randomUUID()
   store.set(VISITOR_COOKIE, id, VISITOR_COOKIE_OPTIONS)

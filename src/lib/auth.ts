@@ -30,6 +30,20 @@ export async function endSession(): Promise<void> {
 }
 
 /**
+ * Invalida todas as sessões já emitidas para o usuário.
+ *
+ * O corte é truncado no segundo porque o `iat` do JWT também é: sem isso, um
+ * token emitido no mesmo instante do corte nasceria inválido, e quem acabou de
+ * trocar a própria senha seria deslogado no ato.
+ */
+export async function revokeSessions(userId: string): Promise<void> {
+  await prisma.user.update({
+    where: { id: userId },
+    data: { sessionsValidFrom: new Date(Math.floor(Date.now() / 1000) * 1000) },
+  })
+}
+
+/**
  * Sessão do usuário atual, revalidada contra o banco.
  *
  * O token carrega papel e nome para leitura rápida no proxy, mas as telas usam
@@ -43,11 +57,35 @@ export async function getCurrentUser() {
 
   const user = await prisma.user.findUnique({
     where: { id: session.userId },
-    select: { id: true, name: true, email: true, role: true, active: true, phone: true, document: true },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      active: true,
+      phone: true,
+      document: true,
+      emailVerifiedAt: true,
+      sessionsValidFrom: true,
+    },
   })
 
   if (!user || !user.active) return null
-  return user
+  // Trocar a senha empurra `sessionsValidFrom` para a frente e derruba os
+  // tokens antigos, que continuariam válidos por até 30 dias.
+  if (session.issuedAt * 1000 < user.sessionsValidFrom.getTime()) return null
+
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    active: user.active,
+    phone: user.phone,
+    document: user.document,
+    emailVerifiedAt: user.emailVerifiedAt,
+    emailVerified: user.emailVerifiedAt !== null,
+  }
 }
 
 export async function requireUser() {

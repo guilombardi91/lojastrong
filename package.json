@@ -17,7 +17,8 @@
     "logo": "node scripts/gerar-logo-escuro.mjs",
     "acentos": "node scripts/corrigir-acentos.mjs",
     "teste:compra": "node scripts/fluxo-compra.mjs",
-    "teste:limpar": "tsx scripts/limpar-testes.ts"
+    "teste:limpar": "tsx scripts/limpar-testes.ts",
+    "emails:previa": "tsx scripts/previa-emails.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.1",

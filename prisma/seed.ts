@@ -349,27 +349,31 @@ async function main() {
   console.log('Semeando a loja...')
 
   // --------------------------------------------------------------- usuários
+  // As contas semeadas já nascem confirmadas: elas nunca vão receber o e-mail
+  // de verificação, e sem isso o admin cairia no bloqueio do checkout.
   const admin = await prisma.user.upsert({
     where: { email: 'admin@strong.com.br' },
-    update: { role: 'ADMIN' },
+    update: { role: 'ADMIN', emailVerifiedAt: new Date() },
     create: {
       name: 'Coordenação da Loja',
       email: 'admin@strong.com.br',
       passwordHash: await bcrypt.hash('Strong@2026', 10),
       role: 'ADMIN',
       phone: '11999990000',
+      emailVerifiedAt: new Date(),
     },
   })
 
   const customer = await prisma.user.upsert({
     where: { email: 'aluno@exemplo.com' },
-    update: {},
+    update: { emailVerifiedAt: new Date() },
     create: {
       name: 'Ana Ribeiro',
       email: 'aluno@exemplo.com',
       passwordHash: await bcrypt.hash('Aluno@2026', 10),
       phone: '11988887777',
       document: '39053344705',
+      emailVerifiedAt: new Date(),
     },
   })
 

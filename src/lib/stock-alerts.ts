@@ -1,5 +1,6 @@
 import { prisma } from './prisma'
-import { sendMail } from './mailer'
+import { sendBackInStockEmail, siteUrl } from './emails'
+import { formatBRL } from './money'
 
 export type StockAlertResult = { ok: boolean; message: string }
 
@@ -40,22 +41,35 @@ export async function subscribeStockAlert(
 export async function notifyStockAlerts(variantId: string): Promise<void> {
   const pending = await prisma.stockAlert.findMany({
     where: { variantId, notifiedAt: null },
-    include: { variant: { include: { product: true } } },
+    include: {
+      variant: {
+        include: {
+          // A primeira imagem da galeria ilustra o e-mail; a ordem é a mesma
+          // que o cliente vê na página do produto.
+          product: { include: { images: { orderBy: { sortOrder: 'asc' }, take: 1 } } },
+        },
+      },
+    },
   })
   if (pending.length === 0) return
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  const base = siteUrl()
 
   for (const alert of pending) {
     const { product } = alert.variant
     const label = [alert.variant.size, alert.variant.color].filter(Boolean).join(' · ')
-    const url = `${siteUrl}/produtos/${product.slug}`
+    const image = product.images[0]?.url
 
-    await sendMail({
+    await sendBackInStockEmail({
       to: alert.email,
-      subject: `${product.name} voltou ao estoque`,
-      text: `${product.name}${label ? ` (${label})` : ''} está disponível de novo: ${url}`,
-      html: `<p><strong>${product.name}</strong>${label ? ` (${label})` : ''} está disponível de novo.</p><p><a href="${url}">Ver produto</a></p>`,
+      productName: product.name,
+      variantLabel: label || undefined,
+      // O preço da variante manda quando existe: é o que o cliente vai pagar.
+      price: formatBRL(alert.variant.price ?? product.basePrice),
+      // O e-mail sai do servidor do cliente, então a imagem precisa de URL
+      // absoluta — caminho relativo não resolve dentro da caixa de entrada.
+      imageUrl: image ? `${base}${image}` : null,
+      productUrl: `${base}/produtos/${product.slug}`,
     })
   }
 

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
+import { EMPRESA, enderecoCompleto } from '@/lib/empresa'
 import { Logo } from '@/components/marca/logo'
 
 const HELP_LINKS = [
@@ -13,6 +14,8 @@ const INSTITUTIONAL_LINKS = [
   { href: 'https://strong.com.br', label: 'Site da Strong' },
   { href: 'https://strong.com.br', label: 'Cursos e MBAs FGV' },
   { href: '/ajuda/corporativo', label: 'Compras corporativas' },
+  { href: '/termos', label: 'Termos de Uso' },
+  { href: '/privacidade', label: 'Política de Privacidade' },
 ]
 
 export async function SiteFooter() {
@@ -89,11 +92,28 @@ export async function SiteFooter() {
       </div>
 
       <div className="border-t border-white/10">
-        <div className="container-page flex flex-col gap-3 py-6 sm:flex-row sm:items-center sm:justify-between">
-          <p className="tag text-brand-100/60">
-            © {new Date().getFullYear()} Strong Business School
-          </p>
-          <p className="tag text-brand-100/60">Pagamentos processados pelo Mercado Pago</p>
+        <div className="container-page flex flex-col gap-4 py-6">
+          {/* CNPJ e endereço aparecem em todas as páginas porque o Decreto
+              7.962/2013 exige essa identificação de forma ostensiva em
+              qualquer comércio eletrônico — não basta estar nos termos. */}
+          <address className="text-xs not-italic leading-relaxed text-brand-100/60">
+            {EMPRESA.razaoSocial} · CNPJ {EMPRESA.cnpj}
+            <br />
+            {enderecoCompleto()}
+            <br />
+            Atendimento:{' '}
+            <a href={`mailto:${EMPRESA.contato.email}`} className="hover:text-white">
+              {EMPRESA.contato.email}
+            </a>{' '}
+            · {EMPRESA.contato.telefone} ({EMPRESA.contato.horario})
+          </address>
+
+          <div className="flex flex-col gap-3 border-t border-white/10 pt-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="tag text-brand-100/60">
+              © {new Date().getFullYear()} Strong Business School
+            </p>
+            <p className="tag text-brand-100/60">Pagamentos processados pelo Mercado Pago</p>
+          </div>
         </div>
       </div>
     </footer>

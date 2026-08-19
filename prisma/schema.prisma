@@ -27,6 +27,13 @@ model User {
   document     String? // CPF, usado na emissão do pagamento
   role         String   @default("CUSTOMER") // CUSTOMER | ADMIN
   active       Boolean  @default(true)
+  /// Nulo enquanto o cliente não clicar no link do e-mail de boas-vindas.
+  /// Contas não confirmadas entram na loja, mas não fecham pedido.
+  emailVerifiedAt DateTime?
+  /// Sessões emitidas antes desta data são recusadas mesmo com token válido.
+  /// É o que faz a troca de senha derrubar quem já estava logado — o JWT vale
+  /// 30 dias e não tem como ser revogado um a um.
+  sessionsValidFrom DateTime @default(now())
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -36,8 +43,28 @@ model User {
   reviews      Review[]
   stockAlerts  StockAlert[]
   productViews ProductView[]
+  authTokens   AuthToken[]
 
   @@index([role])
+}
+
+/// Token de uso único para confirmar e-mail ou redefinir senha.
+///
+/// O banco guarda só o SHA-256: o valor que abre o link existe apenas dentro
+/// do e-mail enviado. Um dump do banco não permite assumir conta nenhuma.
+model AuthToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  type      String // EMAIL_VERIFICATION | PASSWORD_RESET
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, type])
+  @@index([expiresAt])
 }
 
 model Address {

@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { requireUser } from '@/lib/auth'
+import { EmailNaoConfirmado } from '@/components/loja/email-nao-confirmado'
 import { linePrice, readCart, summarizeCart, variantLabel } from '@/lib/cart'
 import { currentCoupon } from '@/lib/coupon'
 import { formatBRL } from '@/lib/money'
@@ -18,6 +19,10 @@ export default async function CheckoutPage() {
   const summary = summarizeCart(cart)
 
   if (!cart || summary.isEmpty) redirect('/carrinho')
+
+  // Sem e-mail confirmado o pedido não sai: é por ele que o cliente recebe a
+  // confirmação da compra e o código de rastreio. O carrinho fica intacto.
+  if (!user.emailVerified) return <EmailNaoConfirmado email={user.email} />
 
   const [addresses, coupon] = await Promise.all([
     prisma.address.findMany({

@@ -45,6 +45,19 @@ export const profileSchema = z.object({
     .refine((v) => !v || isValidCPF(v), 'CPF inválido.'),
 })
 
+export const forgotPasswordSchema = z.object({ email: emailSchema })
+
+export const resetPasswordSchema = z
+  .object({
+    token: z.string().min(1, 'Link inválido.'),
+    password: passwordSchema,
+    confirm: z.string(),
+  })
+  .refine((data) => data.password === data.confirm, {
+    message: 'As senhas não conferem.',
+    path: ['confirm'],
+  })
+
 export const passwordChangeSchema = z
   .object({
     current: z.string().min(1, 'Informe a senha atual.'),

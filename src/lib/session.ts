@@ -7,6 +7,7 @@ import type { Role } from './enums'
 export const SESSION_COOKIE = 'sbs_session'
 export const CART_COOKIE = 'sbs_cart'
 export const VISITOR_COOKIE = 'sbs_visitor'
+export const CONSENT_COOKIE = 'sbs_consent'
 
 const MAX_AGE_SECONDS = 60 * 60 * 24 * 30 // 30 dias
 
@@ -16,6 +17,9 @@ export type SessionPayload = {
   email: string
   name: string
 }
+
+/** O que sai da leitura do token: os dados assinados mais quando foi emitido. */
+export type ReadSession = SessionPayload & { issuedAt: number }
 
 function secretKey(): Uint8Array {
   const secret = process.env.AUTH_SECRET
@@ -35,7 +39,7 @@ export async function signSession(payload: SessionPayload): Promise<string> {
     .sign(secretKey())
 }
 
-export async function readSession(token: string | undefined): Promise<SessionPayload | null> {
+export async function readSession(token: string | undefined): Promise<ReadSession | null> {
   if (!token) return null
   try {
     const { payload } = await jwtVerify(token, secretKey())
@@ -44,6 +48,8 @@ export async function readSession(token: string | undefined): Promise<SessionPay
       role: payload.role as Role,
       email: String(payload.email),
       name: String(payload.name),
+      // `iat` é gravado por setIssuedAt() e vem em segundos.
+      issuedAt: Number(payload.iat ?? 0),
     }
   } catch {
     // Token expirado, adulterado ou assinado com outra chave: sessão inválida.

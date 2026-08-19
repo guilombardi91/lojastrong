@@ -2,6 +2,7 @@ import { LogOut } from 'lucide-react'
 import { requireUser } from '@/lib/auth'
 import { signOutAction } from '@/app/actions/auth'
 import { ContaNav } from '@/components/conta/conta-nav'
+import { VerificacaoAviso } from '@/components/conta/verificacao-aviso'
 
 export default async function ContaLayout({ children }: LayoutProps<'/conta'>) {
   const user = await requireUser()
@@ -15,6 +16,8 @@ export default async function ContaLayout({ children }: LayoutProps<'/conta'>) {
         </h1>
         <p className="mt-2 text-ink-muted">{user.email}</p>
       </header>
+
+      {!user.emailVerified && <VerificacaoAviso email={user.email} />}
 
       <div className="grid gap-8 lg:grid-cols-[15rem_1fr]">
         <aside className="flex flex-col gap-4 lg:sticky lg:top-28 lg:h-fit">
